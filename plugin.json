@@ -1,7 +1,7 @@
 {
   "id": "epic-wasm",
-  "name": "Epic Games (WASM)",
-  "version": "0.1.0",
+  "name": "Epic Games",
+  "version": "0.1.1",
   "kind": "source",
   "entry": "epic_source_wasm_plugin.wasm"
 }

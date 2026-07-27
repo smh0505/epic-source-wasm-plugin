@@ -36,19 +36,23 @@ using the same real manifest field shape `epic.rs`'s own test used.
 ## Installing into a running Concourse
 
 Either build locally (above) or grab the prebuilt `.wasm` + `plugin.json` from this repo's
-Releases page once pushed - CI (`.github/workflows/publish.yml`) publishes a new release
+[Releases](https://github.com/smh0505/epic-source-wasm-plugin/releases) - CI (`.github/workflows/publish.yml`) publishes a new release
 automatically whenever `plugin.json`'s `version` is bumped on `main`. Concourse's Settings ->
 Source tab -> Add Plugin also accepts a Release's `plugin.json` URL directly (source-kind
-plugins install by URL).
+plugins install by URL) - the latest one always lives at:
+
+```
+https://github.com/smh0505/epic-source-wasm-plugin/releases/latest/download/plugin.json
+```
 
 Copy the compiled `.wasm` and `plugin.json` into
 `<app data dir>/wasm-plugins/source/epic-wasm/` (Windows:
 `%APPDATA%\com.bloppy.concourse\wasm-plugins\source\epic-wasm\`). It'll show up in Settings' Plugins
-panel next time the app starts, as **Epic Games (WASM)**.
+panel next time the app starts, as **Epic Games**.
 
 ## Versioning
 
 Plain SemVer (`Cargo.toml` + `plugin.json`'s `version`), independent of Concourse's own
 milestone-tracked version - patch for fixes, minor for backward-compatible new capabilities,
 major for breaking manifest/WIT interface changes. Full convention:
-`.claude/CLAUDE.md` (Plugin Versioning) in the main `concourse` repo.
+[`.claude/CLAUDE.md`](https://github.com/smh0505/Concourse/blob/main/.claude/CLAUDE.md) (Plugin Versioning) in the main [Concourse](https://github.com/smh0505/Concourse) repo.
