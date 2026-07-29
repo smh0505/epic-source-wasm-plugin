@@ -20,6 +20,15 @@ reasoning as the Steam port's own hardcoded install-path fallback.
 app's generic launch dispatch handles Epic's real `com.epicgames.launcher://` URI scheme
 directly via `openUrl()`, never actually calling a plugin's own `launch()` export.
 
+## Permissions
+
+Declares the `run-programs` capability (`plugin.json`'s `capabilities` field) since `launch()`
+calls `host::spawn-process` - even though, per the note above, that path is currently
+unreachable via the host's own `com.epicgames.launcher://` URI dispatch. Concourse gates
+`spawn-process`/`run-and-wait` behind an explicit, visible per-plugin grant (Milestone 13) -
+installing via URL prompts for it in the confirm dialog; an already-installed copy (dropped in
+manually) shows a "Permission needed" row with a Grant button in Settings until granted once.
+
 ## Building
 
 ```sh
