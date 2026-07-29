@@ -582,6 +582,71 @@ pub mod gamelib {
                 }
             }
             #[allow(unused_unsafe, clippy::all)]
+            /// Milestone 13 path allowlisting - requests read access to a directory this plugin
+            /// discovered at runtime (e.g. wherever the user's Steam install actually put its library
+            /// folders), which can't be declared statically in plugin.json the way a fixed path or
+            /// registry key prefix can. The host only grants this if it recognizes the plugin id and
+            /// the path passes a real structural check for that vendor (e.g. a "steamapps"
+            /// subdirectory for Steam) - an unrecognized plugin id is rejected outright rather than
+            /// silently trusted.
+            pub fn request_read_scope(path: &str) -> Result<(), _rt::String> {
+                unsafe {
+                    #[cfg_attr(target_pointer_width = "64", repr(align(8)))]
+                    #[cfg_attr(target_pointer_width = "32", repr(align(4)))]
+                    struct RetArea(
+                        [::core::mem::MaybeUninit<
+                            u8,
+                        >; 3 * ::core::mem::size_of::<*const u8>()],
+                    );
+                    let mut ret_area = RetArea(
+                        [::core::mem::MaybeUninit::uninit(); 3
+                            * ::core::mem::size_of::<*const u8>()],
+                    );
+                    let vec0 = path;
+                    let ptr0 = vec0.as_ptr().cast::<u8>();
+                    let len0 = vec0.len();
+                    let ptr1 = ret_area.0.as_mut_ptr().cast::<u8>();
+                    #[cfg(target_arch = "wasm32")]
+                    #[link(wasm_import_module = "gamelib:plugin/host@0.1.0")]
+                    unsafe extern "C" {
+                        #[link_name = "request-read-scope"]
+                        fn wit_import2(_: *mut u8, _: usize, _: *mut u8);
+                    }
+                    #[cfg(not(target_arch = "wasm32"))]
+                    unsafe extern "C" fn wit_import2(_: *mut u8, _: usize, _: *mut u8) {
+                        unreachable!()
+                    }
+                    unsafe { wit_import2(ptr0.cast_mut(), len0, ptr1) };
+                    let l3 = i32::from(*ptr1.add(0).cast::<u8>());
+                    let result7 = match l3 {
+                        0 => {
+                            let e = ();
+                            Ok(e)
+                        }
+                        1 => {
+                            let e = {
+                                let l4 = *ptr1
+                                    .add(::core::mem::size_of::<*const u8>())
+                                    .cast::<*mut u8>();
+                                let l5 = *ptr1
+                                    .add(2 * ::core::mem::size_of::<*const u8>())
+                                    .cast::<usize>();
+                                let len6 = l5;
+                                let bytes6 = _rt::Vec::from_raw_parts(
+                                    l4.cast(),
+                                    len6,
+                                    len6,
+                                );
+                                _rt::string_lift(bytes6)
+                            };
+                            Err(e)
+                        }
+                        _ => _rt::invalid_enum_discriminant(),
+                    };
+                    result7
+                }
+            }
+            #[allow(unused_unsafe, clippy::all)]
             /// Fire-and-forget spawn (no wait/exit-code) - matches how launch() is used elsewhere
             /// in this app; the host's own folder-based playtime tracking covers session duration.
             pub fn spawn_process(
@@ -2072,9 +2137,9 @@ pub(crate) use __export_source_plugin_world_impl as export;
 )]
 #[doc(hidden)]
 #[allow(clippy::octal_escapes)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 1168] = *b"\
-\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\x86\x08\x01A\x02\x01\
-A\x05\x01B1\x01ks\x01r\x06\x02ids\x05titles\x0fexecutable-paths\x08platforms\x0d\
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 1191] = *b"\
+\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\x9d\x08\x01A\x02\x01\
+A\x05\x01B2\x01ks\x01r\x06\x02ids\x05titles\x0fexecutable-paths\x08platforms\x0d\
 cover-art-url\0\x0binstall-dir\0\x04\0\x0agame-entry\x03\0\x01\x01r\x02\x04names\
 \x04guids\x04\0\x0elocale-profile\x03\0\x03\x01@\x03\x04hives\x04paths\x05values\
 \0\0\x04\0\x14read-registry-string\x01\x05\x01ps\x01j\x01\x06\x01s\x01@\x02\x04h\
@@ -2082,23 +2147,24 @@ ives\x04paths\0\x07\x04\0\x12list-registry-keys\x01\x08\x01j\x01s\x01s\x01@\x01\
 paths\0\x09\x04\0\x09read-file\x01\x0a\x01j\0\x01s\x01@\x02\x04paths\x08contents\
 s\0\x0b\x04\0\x0awrite-file\x01\x0c\x01@\x01\x04paths\0\x07\x04\0\x08list-dir\x01\
 \x0d\x01@\x01\x04paths\0\x7f\x04\0\x0bpath-exists\x01\x0e\x01@\x01\x04paths\0\x0b\
-\x04\0\x0aremove-dir\x01\x0f\x01@\x02\x04paths\x04args\x06\0\x0b\x04\0\x0dspawn-\
-process\x01\x10\x01@\x03\x04paths\x04args\x06\x03cwds\0\x0b\x04\0\x0crun-and-wai\
-t\x01\x11\x01@\x01\x03urls\0\x09\x04\0\x08http-get\x01\x12\x01p}\x01j\x01\x13\x01\
-s\x01@\x01\x03urls\0\x14\x04\0\x0edownload-bytes\x01\x15\x01@\x02\x05bytes\x13\x08\
-dest-dirs\0\x0b\x04\0\x0bextract-zip\x01\x16\x01@\x01\x03dirs\0\x09\x04\0\x14unw\
-rap-single-subdir\x01\x17\x01@\x02\x03srcs\x04dests\0\x0b\x04\0\x0breplace-dir\x01\
-\x18\x01@\0\0\x09\x04\0\x0aplugin-dir\x01\x19\x01@\x01\x03keys\0\0\x04\0\x0csett\
-ings-get\x01\x1a\x01@\x02\x03keys\x05values\x01\0\x04\0\x0csettings-set\x01\x1b\x01\
-@\x02\x07game-idx\x03keys\0\0\x04\0\x0fplugin-data-get\x01\x1c\x01@\x03\x07game-\
-idx\x03keys\x05values\x01\0\x04\0\x0fplugin-data-set\x01\x1d\x03\0\x19gamelib:pl\
-ugin/host@0.1.0\x05\0\x02\x03\0\0\x0agame-entry\x01B\x0c\x02\x03\x02\x01\x01\x04\
-\0\x0agame-entry\x03\0\0\x01p\x01\x01j\x01\x02\x01s\x01@\0\0\x03\x04\0\x04scan\x01\
-\x04\x01j\0\x01s\x01@\x01\x05entry\x01\0\x05\x04\0\x06launch\x01\x06\x01j\x01\x7f\
-\x01s\x01@\x01\x05entry\x01\0\x07\x04\0\x12get-install-status\x01\x08\x04\0\"gam\
-elib:plugin/source-plugin@0.1.0\x05\x02\x04\0(gamelib:plugin/source-plugin-world\
-@0.1.0\x04\0\x0b\x19\x01\0\x13source-plugin-world\x03\0\0\0G\x09producers\x01\x0c\
-processed-by\x02\x0dwit-component\x070.227.1\x10wit-bindgen-rust\x060.41.0";
+\x04\0\x0aremove-dir\x01\x0f\x04\0\x12request-read-scope\x01\x0f\x01@\x02\x04pat\
+hs\x04args\x06\0\x0b\x04\0\x0dspawn-process\x01\x10\x01@\x03\x04paths\x04args\x06\
+\x03cwds\0\x0b\x04\0\x0crun-and-wait\x01\x11\x01@\x01\x03urls\0\x09\x04\0\x08htt\
+p-get\x01\x12\x01p}\x01j\x01\x13\x01s\x01@\x01\x03urls\0\x14\x04\0\x0edownload-b\
+ytes\x01\x15\x01@\x02\x05bytes\x13\x08dest-dirs\0\x0b\x04\0\x0bextract-zip\x01\x16\
+\x01@\x01\x03dirs\0\x09\x04\0\x14unwrap-single-subdir\x01\x17\x01@\x02\x03srcs\x04\
+dests\0\x0b\x04\0\x0breplace-dir\x01\x18\x01@\0\0\x09\x04\0\x0aplugin-dir\x01\x19\
+\x01@\x01\x03keys\0\0\x04\0\x0csettings-get\x01\x1a\x01@\x02\x03keys\x05values\x01\
+\0\x04\0\x0csettings-set\x01\x1b\x01@\x02\x07game-idx\x03keys\0\0\x04\0\x0fplugi\
+n-data-get\x01\x1c\x01@\x03\x07game-idx\x03keys\x05values\x01\0\x04\0\x0fplugin-\
+data-set\x01\x1d\x03\0\x19gamelib:plugin/host@0.1.0\x05\0\x02\x03\0\0\x0agame-en\
+try\x01B\x0c\x02\x03\x02\x01\x01\x04\0\x0agame-entry\x03\0\0\x01p\x01\x01j\x01\x02\
+\x01s\x01@\0\0\x03\x04\0\x04scan\x01\x04\x01j\0\x01s\x01@\x01\x05entry\x01\0\x05\
+\x04\0\x06launch\x01\x06\x01j\x01\x7f\x01s\x01@\x01\x05entry\x01\0\x07\x04\0\x12\
+get-install-status\x01\x08\x04\0\"gamelib:plugin/source-plugin@0.1.0\x05\x02\x04\
+\0(gamelib:plugin/source-plugin-world@0.1.0\x04\0\x0b\x19\x01\0\x13source-plugin\
+-world\x03\0\0\0G\x09producers\x01\x0cprocessed-by\x02\x0dwit-component\x070.227\
+.1\x10wit-bindgen-rust\x060.41.0";
 #[inline(never)]
 #[doc(hidden)]
 pub fn __link_custom_section_describing_imports() {

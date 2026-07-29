@@ -24,6 +24,12 @@ of calling `host::spawn-process` on the URI, which would just fail anyway - a UR
 spawned as a process. No `run-programs` capability needed (Milestone 13's gating) since
 `spawn-process` is never actually called.
 
+Declares one `pathScopes` entry (Milestone 13 path allowlisting) covering its own manifests
+directory - genuinely static, not runtime-discovered, so a literal path prefix in `plugin.json`
+is enough; no dynamic scope request needed the way Steam's is. The actual per-game install
+folder (variable, user-changeable in Epic's own launcher) is just a string field read out of a
+manifest file's JSON content, never itself passed to a host file-access function.
+
 ## Building
 
 ```sh

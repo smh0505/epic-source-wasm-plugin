@@ -1,7 +1,10 @@
 {
   "id": "epic-wasm",
   "name": "Epic Games",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "kind": "source",
-  "entry": "epic_source_wasm_plugin.wasm"
+  "entry": "epic_source_wasm_plugin.wasm",
+  "pathScopes": [
+    { "type": "path", "prefix": "C:\\ProgramData\\Epic\\EpicGamesLauncher\\Data\\Manifests" }
+  ]
 }
