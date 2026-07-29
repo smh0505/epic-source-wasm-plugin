@@ -1179,7 +1179,7 @@ pub mod gamelib {
                 }
             }
             #[allow(unused_unsafe, clippy::all)]
-            /// This plugin's own writable directory (`<app data>/wasm-plugins/<plugin-id>/`) - for a
+            /// This plugin's own writable directory (`<app data>/wasm-plugins/<kind>/<plugin-id>/`) - for a
             /// plugin that manages its own downloaded dependency (e.g. a wrapper plugin's managed
             /// install) rather than just reading/scanning existing files elsewhere.
             pub fn plugin_dir() -> Result<_rt::String, _rt::String> {

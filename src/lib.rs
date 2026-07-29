@@ -105,8 +105,15 @@ impl Guest for EpicPlugin {
         Ok(find_epic_apps().iter().map(to_game_entry).collect())
     }
 
-    fn launch(entry: GameEntry) -> Result<(), String> {
-        host::spawn_process(&entry.executable_path, &[])
+    fn launch(_entry: GameEntry) -> Result<(), String> {
+        // Never actually reachable (see the module doc comment) - documented as a real error
+        // rather than calling host::spawn-process on a "com.epicgames.launcher://..." URI,
+        // which would just fail anyway (a URI can't be spawned as a process). Was calling
+        // spawn-process for no functional reason, which meant declaring the run-programs
+        // capability for no reason too - dropped from plugin.json alongside this fix.
+        Err("launch() is not used for Epic entries - the host launches \
+             com.epicgames.launcher:// URIs directly via its own OS protocol handler."
+            .to_string())
     }
 
     fn get_install_status(entry: GameEntry) -> Result<bool, String> {

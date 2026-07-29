@@ -1,8 +1,7 @@
 {
   "id": "epic-wasm",
   "name": "Epic Games",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "kind": "source",
-  "entry": "epic_source_wasm_plugin.wasm",
-  "capabilities": ["run-programs"]
+  "entry": "epic_source_wasm_plugin.wasm"
 }
