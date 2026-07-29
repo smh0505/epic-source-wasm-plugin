@@ -1,7 +1,7 @@
 {
   "id": "epic-wasm",
   "name": "Epic Games",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "kind": "source",
   "entry": "epic_source_wasm_plugin.wasm",
   "pathScopes": [
